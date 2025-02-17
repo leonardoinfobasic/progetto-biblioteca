@@ -15,7 +15,6 @@
                         <span class="text-red-500">Non disponibile</span>
                     @endif
                 </p>
-                {{-- Qui puoi aggiungere altri dettagli del libro, ad esempio la trama --}}
                 <p class="py-6">Trama: {{$book->plot}}</p>
 
                 <a href="{{ url('/books') }}" class="btn btn-primary">Torna alla lista</a>

@@ -27,7 +27,7 @@ Route::get('/books/{id}', function ($id) {
         abort(404);
     }
 
-    return view('pages.booksid', ['book' => $book]);
+    return view('pages.booksid', compact('book'));
 });
 
 Route::get('/authors', function () {
@@ -72,3 +72,40 @@ Route::put('/loans/{id}/return', function ($id) {
 
     return redirect('/loans');
 })->name('loans.return');
+
+
+//aggiornamento route: Routes da Implementare Definire in `routes/web.php`: - GET /books/create → Form creazione libro - POST /books → Salvataggio nuovo libro - GET /books/{id} → Dettaglio libro
+
+//aggiunge libro
+Route::get('/createbooks', function () {
+    return view('pages.createbooks');
+})->name('books.create');
+
+// Salva il libro nel DB
+Route::post('/books', function (Request $request) {
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'author' => 'required|string|max:255',
+        'image_url' => 'nullable|url',
+        'plot' => 'nullable|string',
+    ]);
+
+    $author = DB::table('authors')->where('name', $request->author)->first();
+    if (!$author) {
+        $authorId = DB::table('authors')->insertGetId([
+            'name' => $request->author
+        ]);
+    } else {
+        $authorId = $author->id;
+    }
+
+    DB::table('books')->insert([
+        'title' => $request->title,
+        'author_id' => $authorId,
+        'available' => $request->has('available'),
+        'image_url' => $request->image_url,
+        'plot' => $request->plot,
+    ]);
+
+    return redirect('/books')->with('success', 'Libro aggiunto con successo!');
+})->name('books.store');
